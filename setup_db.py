@@ -5,12 +5,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Database configuration
+# DB_CONFIG = {
+#     'host': os.getenv('DB_HOST'),
+#     'user': os.getenv('DB_USER'),
+#     'password': os.getenv('DB_PASSWORD')
+# }
 DB_CONFIG = {
-    'host': os.getenv('DB_HOST'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD')
+    # 'host': os.getenv('DB_HOST'),
+    # 'user': os.getenv('DB_USER'),
+    # 'password': os.getenv('DB_PASSWORD'),
+    # 'database': os.getenv('DB_NAME')
+    "host":os.getenv("DB_HOST"),
+    "port":int(os.getenv("DB_PORT")),
+    "user":os.getenv("DB_USER"),
+    "password":os.getenv("DB_PASSWORD"),
+    "database":os.getenv("DB_NAME"),
+    "ssl_disabled":False
 }
-
 def setup_database():
     """Create database and tables"""
     try:

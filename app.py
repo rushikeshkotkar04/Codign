@@ -14,10 +14,16 @@ app.secret_key = os.getenv('SECRET_KEY')
 
 # Database configuration
 DB_CONFIG = {
-    'host': os.getenv('DB_HOST'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'database': os.getenv('DB_NAME')
+    # 'host': os.getenv('DB_HOST'),
+    # 'user': os.getenv('DB_USER'),
+    # 'password': os.getenv('DB_PASSWORD'),
+    # 'database': os.getenv('DB_NAME')
+    "host":os.getenv("DB_HOST"),
+    "port":int(os.getenv("DB_PORT")),
+    "user":os.getenv("DB_USER"),
+    "password":os.getenv("DB_PASSWORD"),
+    "database":os.getenv("DB_NAME"),
+    "ssl_disabled":False
 }
 
 # Groq API configuration
@@ -26,7 +32,7 @@ GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # Solution validation constants
 MIN_ANALYZE_LENGTH = 2  # Very minimal for analysis
-MIN_SUBMIT_LENGTH = 100  # Higher requirement for submission
+MIN_SUBMIT_LENGTH = 2  # Higher requirement for submission
 MAX_SOLUTION_LENGTH = 10000
 
 def get_db_connection():
