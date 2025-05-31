@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - Codign{% endblock %}
+
+{% block content %}
+<style>
+    .leaderboard-header {
+        text-align: center;
+        padding: 3rem 0;
+        background: var(--gradient);
+        color: white;
+        border-radius: var(--radius-xl);
+        margin-bottom: 3rem;
+    }
+    
+    .leaderboard-header h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+    
+    .leaderboard-header p {
+        font-size: 1.25rem;
+        opacity: 0.9;
+    }
+    
+    .leaderboard-table {
+        background: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+    
+    .table-header {
+        background: var(--light);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .table-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .table-body {
+        padding: 0;
+    }
+    
+    .leaderboard-item {
+        display: grid;
+        grid-template-columns: 60px 1fr 120px 120px 120px;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border);
+        transition: all 0.3s ease;
+    }
+    
+    .leaderboard-item:hover {
+        background: var(--light);
+    }
+    
+    .leaderboard-item:last-child {
+        border-bottom: none;
+    }
+    
+    .rank {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        text-align: center;
+    }
+    
+    .rank.top-1 { color: #ffd700; }
+    .rank.top-2 { color: #c0c0c0; }
+    .rank.top-3 { color: #cd7f32; }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+    
+    .username {
+        font-weight: 600;
+        color: var(--dark);
+    }
+    
+    .stat-value {
+        font-weight: 700;
+        text-align: center;
+    }
+    
+    .total-score {
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+    
+    .submissions-count {
+        color: var(--info);
+    }
+    
+    .avg-score {
+        color: var(--success);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--gray);
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+        .leaderboard-header h1 {
+            font-size: 2rem;
+        }
+        
+        .leaderboard-item {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .user-info {
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="leaderboard-header">
+    <h1><i class="fas fa-trophy"></i> Leaderboard</h1>
+    <p>Top performers in system design challenges</p>
+</div>
+
+<div class="leaderboard-table">
+    <div class="table-header">
+        <div class="table-title">
+            <i class="fas fa-medal"></i>
+            Top Coders
+        </div>
+    </div>
+    <div class="table-body">
+        {% if leaderboard %}
+            {% for user in leaderboard %}
+            <div class="leaderboard-item">
+                <div class="rank {% if loop.index == 1 %}top-1{% elif loop.index == 2 %}top-2{% elif loop.index == 3 %}top-3{% endif %}">
+                    {% if loop.index <= 3 %}
+                        <i class="fas fa-crown"></i>
+                    {% else %}
+                        {{ loop.index }}
+                    {% endif %}
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ user.username[0].upper() }}
+                    </div>
+                    <div class="username">{{ user.username }}</div>
+                </div>
+                <div class="stat-value total-score">{{ user.total_score }}</div>
+                <div class="stat-value submissions-count">{{ user.total_submissions or 0 }}</div>
+                <div class="stat-value avg-score">{{ "%.1f"|format(user.avg_score or 0) }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-trophy"></i>
+                <h3>No rankings yet</h3>
+                <p>Be the first to solve problems and claim the top spot!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

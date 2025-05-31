@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Codign{% endblock %}
+
+{% block content %}
+<style>
+    .profile-container {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+    }
+    
+    .profile-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        height: fit-content;
+    }
+    
+    .profile-header {
+        background: var(--gradient);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 1rem;
+    }
+    
+    .profile-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-email {
+        opacity: 0.9;
+    }
+    
+    .profile-stats {
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .stat-item {
+        padding: 1rem;
+        border-radius: var(--radius);
+        background: var(--light);
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--gray);
+        font-weight: 600;
+    }
+    
+    .submissions-panel {
+        background: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+    
+    .panel-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--light);
+    }
+    
+    .panel-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .panel-body {
+        padding: 2rem;
+        max-height: 600px;
+        overflow-y: auto;
+    }
+    
+    .submission-item {
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .submission-item:hover {
+        box-shadow: var(--shadow);
+    }
+    
+    .submission-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .submission-title {
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .submission-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .submission-type {
+        background: var(--primary);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .submission-difficulty {
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .difficulty-easy { background: #dcfce7; color: #166534; }
+    .difficulty-medium { background: #fef3c7; color: #92400e; }
+    .difficulty-hard { background: #fef2f2; color: #991b1b; }
+    
+    .submission-score {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary);
+    }
+    
+    .submission-feedback {
+        color: var(--gray);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    
+    .submission-date {
+        color: var(--gray);
+        font-size: 0.875rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--gray);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    @media (max-width: 1024px) {
+        .profile-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .profile-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .profile-stats {
+            grid-template-columns: 1fr;
+        }
+        
+        .submission-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-name">{{ user.username }}</div>
+            <div class="profile-email">{{ user.email }}</div>
+        </div>
+        <div class="profile-stats">
+            <div class="stat-item">
+                <div class="stat-number">{{ user.total_score }}</div>
+                <div class="stat-label">Total Score</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ total_submissions }}</div>
+                <div class="stat-label">Submissions</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ avg_score }}</div>
+                <div class="stat-label">Avg Score</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="submissions-panel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <i class="fas fa-history"></i>
+                Submission History
+            </div>
+        </div>
+        <div class="panel-body">
+            {% if submissions %}
+                {% for submission in submissions %}
+                <div class="submission-item">
+                    <div class="submission-header">
+                        <div>
+                            <div class="submission-title">{{ submission.title }}</div>
+                            <div class="submission-meta">
+                                <span class="submission-type">{{ submission.question_type }}</span>
+                                <span class="submission-difficulty difficulty-{{ submission.difficulty }}">
+                                    {{ submission.difficulty.title() }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="submission-score">{{ submission.score }}/10</div>
+                    </div>
+                    <div class="submission-feedback">{{ submission.feedback }}</div>
+                    <div class="submission-date">
+                        <i class="fas fa-calendar"></i>
+                        {{ submission.submitted_at.strftime('%B %d, %Y at %I:%M %p') }}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-code"></i>
+                    <h3>No submissions yet</h3>
+                    <p>Start solving problems to see your submission history!</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-top: 1rem;">
+                        <i class="fas fa-puzzle-piece"></i>
+                        Browse Problems
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,908 @@
+{% extends "base.html" %}
+
+{% block title %}{{ problem.title }} - Codign{% endblock %}
+
+{% block content %}
+<style>
+    .problem-layout {
+        display: flex;
+        height: calc(100vh - 80px);
+        background: #0a0a0a;
+    }
+    
+    .problem-left {
+        width: 50%;
+        background: #1a1a1a;
+        border-right: 1px solid #333;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .problem-right {
+        width: 50%;
+        background: #1a1a1a;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .problem-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #333;
+        background: linear-gradient(135deg, #222 0%, #2a2a2a 100%);
+    }
+    
+    .problem-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .problem-meta {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .meta-tag {
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .type-tag {
+        background: rgba(255, 161, 22, 0.2);
+        color: #ffa116;
+        border: 1px solid rgba(255, 161, 22, 0.3);
+    }
+    
+    .difficulty-easy {
+        background: rgba(0, 184, 148, 0.2);
+        color: #00b894;
+        border: 1px solid rgba(0, 184, 148, 0.3);
+    }
+    
+    .difficulty-medium {
+        background: rgba(253, 203, 110, 0.2);
+        color: #fdcb6e;
+        border: 1px solid rgba(253, 203, 110, 0.3);
+    }
+    
+    .difficulty-hard {
+        background: rgba(225, 112, 85, 0.2);
+        color: #e17055;
+        border: 1px solid rgba(225, 112, 85, 0.3);
+    }
+    
+    .problem-content {
+        flex: 1;
+        padding: 0;
+        overflow-y: auto;
+    }
+    
+    .problem-section {
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid #2a2a2a;
+        transition: background-color 0.3s ease;
+    }
+    
+    .problem-section:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .problem-section:last-child {
+        border-bottom: none;
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #ffa116;
+    }
+    
+    .section-content {
+        color: #e0e0e0;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+    
+    .section-content p {
+        margin-bottom: 0.8rem;
+    }
+    
+    .section-content p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .requirements-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .requirements-list li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #e0e0e0;
+    }
+    
+    .requirements-list li:before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: #ffa116;
+        font-weight: bold;
+    }
+    
+    .code-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #333;
+        background: linear-gradient(135deg, #222 0%, #2a2a2a 100%);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .code-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .code-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .speech-controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-right: 1rem;
+    }
+    
+    .speech-btn {
+        background: rgba(255, 161, 22, 0.2);
+        border: 1px solid rgba(255, 161, 22, 0.3);
+        color: #ffa116;
+        padding: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .speech-btn:hover {
+        background: rgba(255, 161, 22, 0.3);
+    }
+    
+    .speech-btn.recording {
+        background: rgba(225, 112, 85, 0.3);
+        border-color: rgba(225, 112, 85, 0.5);
+        color: #e17055;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .speech-status {
+        font-size: 0.75rem;
+        color: #666;
+        margin-left: 0.5rem;
+    }
+    
+    .speech-status.listening {
+        color: #e17055;
+    }
+    
+    .code-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    
+    .code-editor {
+        flex: 1;
+        background: #1e1e1e;
+        border: none;
+        padding: 1.5rem;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+        font-size: 0.9rem;
+        color: #ffffff;
+        resize: none;
+        outline: none;
+        line-height: 1.6;
+        transition: all 0.3s ease;
+    }
+    
+    .code-editor:focus {
+        background: #252525;
+    }
+    
+    .code-editor::placeholder {
+        color: #666;
+        font-style: italic;
+    }
+    
+    .char-counter {
+        position: absolute;
+        bottom: 10px;
+        right: 15px;
+        font-size: 0.75rem;
+        color: #666;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+    
+    .char-counter.warning {
+        color: #fdcb6e;
+    }
+    
+    .char-counter.good {
+        color: #00b894;
+    }
+    
+    .result-area {
+        background: #222;
+        border-top: 1px solid #333;
+        min-height: 200px;
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+    }
+    
+    .result-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #2a2a2a;
+    }
+    
+    .result-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .result-score {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ffa116;
+        padding: 0.25rem 0.5rem;
+        background: rgba(255, 161, 22, 0.1);
+        border-radius: 6px;
+        border: 1px solid rgba(255, 161, 22, 0.3);
+    }
+    
+    .result-content {
+        padding: 1.5rem;
+        color: #e0e0e0;
+        line-height: 1.6;
+        font-size: 0.9rem;
+    }
+    
+    .login-prompt {
+        background: rgba(253, 203, 110, 0.1);
+        border: 1px solid rgba(253, 203, 110, 0.3);
+        color: #fdcb6e;
+        padding: 1.5rem;
+        text-align: center;
+        border-radius: 8px;
+        margin: 1.5rem;
+    }
+    
+    .login-prompt a {
+        color: #ffa116;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .login-prompt a:hover {
+        text-decoration: underline;
+    }
+    
+    .submissions-history {
+        padding: 1.5rem;
+        border-top: 1px solid #2a2a2a;
+        background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .submissions-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .submission-item {
+        padding: 1rem;
+        border: 1px solid #333;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        background: #222;
+        transition: all 0.3s ease;
+    }
+    
+    .submission-item:hover {
+        border-color: #444;
+        transform: translateY(-1px);
+    }
+    
+    .submission-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .submission-score {
+        font-weight: 600;
+        color: #ffa116;
+        background: rgba(255, 161, 22, 0.1);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+    
+    .submission-date {
+        color: #999;
+        font-size: 0.8rem;
+    }
+    
+    .submission-feedback {
+        color: #ccc;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .loading {
+        display: none;
+        text-align: center;
+        padding: 3rem;
+        color: #999;
+    }
+    
+    .loading i {
+        font-size: 2rem;
+        animation: spin 1s linear infinite;
+        color: #ffa116;
+        margin-bottom: 1rem;
+    }
+    
+    .loading p {
+        font-size: 1rem;
+        color: #ccc;
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 1024px) {
+        .problem-layout {
+            flex-direction: column;
+            height: auto;
+        }
+        
+        .problem-left,
+        .problem-right {
+            width: 100%;
+        }
+        
+        .problem-left {
+            border-right: none;
+            border-bottom: 1px solid #333;
+        }
+        
+        .speech-controls {
+            margin-right: 0.5rem;
+        }
+    }
+</style>
+
+<div class="problem-layout">
+    <div class="problem-left">
+        <div class="problem-header">
+            <h1 class="problem-title">
+                {% if problem.question_type == 'LLD' %}
+                    <i class="fas fa-cubes"></i>
+                {% else %}
+                    <i class="fas fa-sitemap"></i>
+                {% endif %}
+                {{ problem.title }}
+            </h1>
+            <div class="problem-meta">
+                <span class="meta-tag type-tag">
+                    {% if problem.question_type == 'LLD' %}🧩{% else %}🌐{% endif %}
+                    {{ problem.question_type }}
+                </span>
+                <span class="meta-tag difficulty-{{ problem.difficulty }}">
+                    {% if problem.difficulty == 'easy' %}🟢
+                    {% elif problem.difficulty == 'medium' %}🟠
+                    {% else %}🔴
+                    {% endif %}
+                    {{ problem.difficulty.title() }}
+                </span>
+            </div>
+        </div>
+        <div class="problem-content">
+            {% set sections = problem.description.split('\n\n') %}
+            
+            {% if sections|length >= 3 %}
+                <div class="problem-section">
+                    <div class="section-header">
+                        <i class="fas fa-file-text"></i>
+                        Problem Description
+                    </div>
+                    <div class="section-content">
+                        <p>{{ sections[0] }}</p>
+                    </div>
+                </div>
+                
+                <div class="problem-section">
+                    <div class="section-header">
+                        <i class="fas fa-tasks"></i>
+                        Functional Requirements
+                    </div>
+                    <div class="section-content">
+                        <ul class="requirements-list">
+                            {% for line in sections[1].replace('Functional Requirements:', '').strip().split('\n') %}
+                                {% if line.strip() and line.strip().startswith('•') %}
+                                    <li>{{ line.strip()[1:].strip() }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="problem-section">
+                    <div class="section-header">
+                        <i class="fas fa-chart-line"></i>
+                        Non-Functional Requirements
+                    </div>
+                    <div class="section-content">
+                        <ul class="requirements-list">
+                            {% for line in sections[2].replace('Non-Functional Requirements:', '').strip().split('\n') %}
+                                {% if line.strip() and line.strip().startswith('•') %}
+                                    <li>{{ line.strip()[1:].strip() }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                {% if sections|length > 3 %}
+                    <div class="problem-section">
+                        <div class="section-header">
+                            <i class="fas fa-lightbulb"></i>
+                            Considerations
+                        </div>
+                        <div class="section-content">
+                            <ul class="requirements-list">
+                                {% for line in sections[3].replace('Considerations:', '').strip().split('\n') %}
+                                    {% if line.strip() and line.strip().startswith('•') %}
+                                        <li>{{ line.strip()[1:].strip() }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="problem-section">
+                    <div class="section-content">
+                        {{ problem.description | safe }}
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if submissions %}
+            <div class="submissions-history">
+                <h3 class="submissions-title">
+                    <i class="fas fa-history"></i>
+                    Your Recent Submissions
+                </h3>
+                {% for submission in submissions %}
+                <div class="submission-item">
+                    <div class="submission-header">
+                        <span class="submission-score">Score: {{ submission.score }}/10</span>
+                        <span class="submission-date">{{ submission.submitted_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
+                    </div>
+                    <div class="submission-feedback">{{ submission.feedback }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="problem-right">
+        <div class="code-header">
+            <span class="code-title">
+                <i class="fas fa-code"></i>
+                Solution
+            </span>
+            <div style="display: flex; align-items: center;">
+                
+                <div class="speech-controls">
+                    <button class="speech-btn" id="speechBtn" onclick="toggleSpeech()" title="Voice Input">
+                        <i class="fas fa-microphone" id="speechIcon"></i>
+                    </button>
+                    <span class="speech-status" id="speechStatus">Click to speak</span>
+                </div>
+                {% if session.username %}
+                <div class="code-actions">
+                    <button class="btn btn-warning" onclick="resetSolution()">
+                        <i class="fas fa-undo"></i>
+                        Reset
+                    </button>
+                    <button class="btn btn-info" onclick="analyzeSolution()">
+                        <i class="fas fa-search"></i>
+                        Analyze
+                    </button>
+                    <button class="btn btn-success" onclick="submitSolution()">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="code-area">
+            <textarea 
+                id="solutionText" 
+                class="code-editor" 
+                placeholder="{% if problem.question_type == 'LLD' %}// Low-Level Design Solution
+// Write your class design and implementation here...
+// You can also use voice input by clicking the microphone button
+
+class YourSolution {
+    // Define your classes, methods, and relationships
+}{% else %}// High-Level Design Solution
+// Describe your system architecture here...
+// You can also use voice input by clicking the microphone button
+
+## System Components:
+1. Load Balancer
+2. Application Servers
+3. Database Layer
+4. Cache Layer
+
+## Database Design:
+- Tables and relationships
+- Indexing strategy
+
+## API Design:
+- RESTful endpoints
+- Request/Response formats{% endif %}"
+                oninput="updateCharCounter()"
+                onkeyup="updateCharCounter()"></textarea>
+            
+            <div class="char-counter" id="charCounter">0 characters</div>
+            
+            {% if not session.username %}
+            <div class="login-prompt">
+                <i class="fas fa-lock"></i>
+                <strong>Login Required</strong><br>
+                Please <a href="{{ url_for('login') }}?next={{ request.url }}">login</a> to analyze and submit solutions.
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="result-area" id="resultArea">
+            <div class="result-header">
+                <span class="result-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Analysis Result
+                </span>
+                <span class="result-score" id="resultScore"></span>
+            </div>
+            <div class="result-content" id="resultContent"></div>
+        </div>
+        
+        <div class="loading" id="loadingArea">
+            <i class="fas fa-spinner"></i>
+            <p>Analyzing your solution with AI...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+const problemId = {{ problem.id }};
+const isLoggedIn = {{ 'true' if session.username else 'false' }};
+const MIN_SUBMIT_LENGTH = 100;
+
+// Speech Recognition Variables
+let recognition = null;
+let isListening = false;
+
+// Initialize Speech Recognition
+function initSpeechRecognition() {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        
+        recognition.onstart = function() {
+            isListening = true;
+            document.getElementById('speechBtn').classList.add('recording');
+            document.getElementById('speechIcon').className = 'fas fa-stop';
+            document.getElementById('speechStatus').textContent = 'Listening...';
+            document.getElementById('speechStatus').classList.add('listening');
+        };
+        
+        recognition.onresult = function(event) {
+            let finalTranscript = '';
+            let interimTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript;
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            
+            if (finalTranscript) {
+                const textarea = document.getElementById('solutionText');
+                const currentText = textarea.value;
+                const newText = finalTranscript.trim();
+                
+                // Add space before new text if textarea is not empty and doesn't end with space
+                const separator = (currentText && !currentText.endsWith(' ') && !currentText.endsWith('\n')) ? ' ' : '';
+                
+                textarea.value = currentText + separator + newText;
+                updateCharCounter();
+                
+                // Move cursor to end
+                textarea.scrollTop = textarea.scrollHeight;
+            }
+        };
+        
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            stopSpeech();
+            if (event.error === 'not-allowed') {
+                alert('Microphone access denied. Please allow microphone access and try again.');
+            } else {
+                alert('Speech recognition error: ' + event.error);
+            }
+        };
+        
+        recognition.onend = function() {
+            stopSpeech();
+        };
+    } else {
+        console.log('Speech recognition not supported');
+        document.getElementById('speechBtn').style.display = 'none';
+        document.getElementById('speechStatus').textContent = 'Voice input not supported';
+    }
+}
+
+function toggleSpeech() {
+    if (!recognition) {
+        alert('Speech recognition not available in your browser.');
+        return;
+    }
+    
+    if (isListening) {
+        stopSpeech();
+    } else {
+        startSpeech();
+    }
+}
+
+function startSpeech() {
+    if (recognition && !isListening) {
+        try {
+            recognition.start();
+        } catch (error) {
+            console.error('Error starting speech recognition:', error);
+        }
+    }
+}
+
+function stopSpeech() {
+    if (recognition && isListening) {
+        recognition.stop();
+    }
+    
+    isListening = false;
+    document.getElementById('speechBtn').classList.remove('recording');
+    document.getElementById('speechIcon').className = 'fas fa-microphone';
+    document.getElementById('speechStatus').textContent = 'Click to speak';
+    document.getElementById('speechStatus').classList.remove('listening');
+}
+
+function updateCharCounter() {
+    const textarea = document.getElementById('solutionText');
+    const counter = document.getElementById('charCounter');
+    const length = textarea.value.length;
+    
+    counter.textContent = `${length} characters`;
+    
+    if (length < MIN_SUBMIT_LENGTH) {
+        counter.className = 'char-counter warning';
+    } else {
+        counter.className = 'char-counter good';
+    }
+}
+
+function resetSolution() {
+    stopSpeech();
+    document.getElementById('solutionText').value = '';
+    document.getElementById('resultArea').style.display = 'none';
+    updateCharCounter();
+}
+
+async function analyzeSolution() {
+    if (!isLoggedIn) {
+        alert('Please login to analyze solutions!');
+        window.location.href = '{{ url_for("login") }}?next={{ request.url }}';
+        return;
+    }
+    
+    const solution = document.getElementById('solutionText').value.trim();
+    
+    if (!solution) {
+        alert('Please write a solution first!');
+        return;
+    }
+    
+    if (solution.length < 2) {
+        alert('Solution too short! Please provide at least 2 characters for analysis.');
+        return;
+    }
+    
+    stopSpeech();
+    showLoading(true);
+    
+    try {
+        const response = await fetch('/analyze_solution', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                problem_id: problemId,
+                solution: solution
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showResult(data.score, data.feedback, false);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('Network error. Please try again.');
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function submitSolution() {
+    if (!isLoggedIn) {
+        alert('Please login to submit solutions!');
+        window.location.href = '{{ url_for("login") }}?next={{ request.url }}';
+        return;
+    }
+    
+    const solution = document.getElementById('solutionText').value.trim();
+    
+    if (!solution) {
+        alert('Please write a solution first!');
+        return;
+    }
+    
+    if (solution.length < MIN_SUBMIT_LENGTH) {
+        alert(`Solution too short for submission! Please provide at least ${MIN_SUBMIT_LENGTH} characters for a complete solution.`);
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to submit this solution? This will be saved to your profile.')) {
+        return;
+    }
+    
+    stopSpeech();
+    showLoading(true);
+    
+    try {
+        const response = await fetch('/submit_solution', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                problem_id: problemId,
+                solution: solution
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showResult(data.score, data.feedback, true);
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('Network error. Please try again.');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function showLoading(show) {
+    document.getElementById('loadingArea').style.display = show ? 'block' : 'none';
+    document.getElementById('resultArea').style.display = show ? 'none' : 'block';
+}
+
+function showResult(score, feedback, isSubmission) {
+    document.getElementById('resultScore').textContent = `${score}/10`;
+    document.getElementById('resultContent').textContent = feedback;
+    document.getElementById('resultArea').style.display = 'block';
+    
+    if (isSubmission) {
+        document.getElementById('resultContent').innerHTML = 
+            `<strong style="color: #00b894;">✅ Solution Submitted Successfully!</strong><br><br>${feedback}`;
+    }
+}
+
+// Initialize everything when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    updateCharCounter();
+    initSpeechRecognition();
+});
+
+// Stop speech when user navigates away
+window.addEventListener('beforeunload', function() {
+    stopSpeech();
+});
+</script>
+{% endblock %}

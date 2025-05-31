@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}Problems - Codign{% endblock %}
+
+{% block content %}
+<style>
+    .problems-header {
+        background: #1a1a1a;
+        border-bottom: 1px solid #333;
+        padding: 1.5rem 0;
+    }
+    
+    .problems-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-container {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .filter-group {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .filter-label {
+        font-size: 0.875rem;
+        color: #999;
+        font-weight: 500;
+    }
+    
+    .filter-tabs {
+        display: flex;
+        gap: 0.25rem;
+        background: #2a2a2a;
+        border-radius: 6px;
+        padding: 0.25rem;
+    }
+    
+    .filter-tab {
+        padding: 0.4rem 0.8rem;
+        background: transparent;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        font-size: 0.8rem;
+        color: #999;
+    }
+    
+    .filter-tab.active {
+        background: #ffa116;
+        color: #000;
+    }
+    
+    .filter-tab:hover:not(.active) {
+        background: #333;
+        color: #fff;
+    }
+    
+    .problems-container {
+        background: #0a0a0a;
+        min-height: calc(100vh - 140px);
+    }
+    
+    .problems-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #1a1a1a;
+        margin-top: 0;
+    }
+    
+    .problems-table th {
+        background: #222;
+        color: #999;
+        font-weight: 500;
+        font-size: 0.875rem;
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid #333;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    .problems-table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #333;
+        vertical-align: middle;
+    }
+    
+    .problems-table tr {
+        transition: background-color 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .problems-table tr:hover {
+        background: #222;
+    }
+    
+    .problem-title {
+        color: #ffffff;
+        font-weight: 500;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .problem-title:hover {
+        color: #ffa116;
+    }
+    
+    .problem-status {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    
+    .status-solved {
+        background: #00b894;
+    }
+    
+    .status-attempted {
+        background: #fdcb6e;
+    }
+    
+    .status-unsolved {
+        background: #555;
+    }
+    
+    .difficulty-tag {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .difficulty-easy {
+        background: rgba(0, 184, 148, 0.2);
+        color: #00b894;
+    }
+    
+    .difficulty-medium {
+        background: rgba(253, 203, 110, 0.2);
+        color: #fdcb6e;
+    }
+    
+    .difficulty-hard {
+        background: rgba(225, 112, 85, 0.2);
+        color: #e17055;
+    }
+    
+    .type-tag {
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        background: rgba(255, 161, 22, 0.2);
+        color: #ffa116;
+    }
+    
+    .acceptance-rate {
+        color: #999;
+        font-size: 0.875rem;
+    }
+    
+    .submissions-count {
+        color: #999;
+        font-size: 0.875rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #666;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+        .problems-table {
+            font-size: 0.875rem;
+        }
+        
+        .problems-table th,
+        .problems-table td {
+            padding: 0.75rem 1rem;
+        }
+        
+        .filter-container {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="problems-header">
+    <div class="container">
+        <h1 class="problems-title">Problems</h1>
+        <div class="filter-container">
+            <div class="filter-group">
+                <span class="filter-label">Type:</span>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterProblems('all', 'type')">All</button>
+                    <button class="filter-tab" onclick="filterProblems('LLD', 'type')">LLD</button>
+                    <button class="filter-tab" onclick="filterProblems('HLD', 'type')">HLD</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Difficulty:</span>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterProblems('all', 'difficulty')">All</button>
+                    <button class="filter-tab" onclick="filterProblems('easy', 'difficulty')">Easy</button>
+                    <button class="filter-tab" onclick="filterProblems('medium', 'difficulty')">Medium</button>
+                    <button class="filter-tab" onclick="filterProblems('hard', 'difficulty')">Hard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="problems-container">
+    <div class="container">
+        {% if problems %}
+            <table class="problems-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">Status</th>
+                        <th>Title</th>
+                        <th style="width: 80px;">Type</th>
+                        <th style="width: 100px;">Difficulty</th>
+                        <th style="width: 120px;">Submissions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for problem in problems %}
+                    <tr class="problem-row" 
+                        data-type="{{ problem.question_type }}" 
+                        data-difficulty="{{ problem.difficulty }}"
+                        onclick="window.location.href='{{ url_for('problem_detail', problem_id=problem.id) }}'">
+                        <td>
+                            <div class="problem-status status-unsolved"></div>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('problem_detail', problem_id=problem.id) }}" class="problem-title">
+                                {% if problem.question_type == 'LLD' %}
+                                    <i class="fas fa-cubes" title="Low-Level Design"></i>
+                                {% else %}
+                                    <i class="fas fa-sitemap" title="High-Level Design"></i>
+                                {% endif %}
+                                {{ problem.title }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="type-tag">
+                                {% if problem.question_type == 'LLD' %}🧩{% else %}🌐{% endif %} {{ problem.question_type }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="difficulty-tag difficulty-{{ problem.difficulty }}">
+                                {% if problem.difficulty == 'easy' %}🟢
+                                {% elif problem.difficulty == 'medium' %}🟠
+                                {% else %}🔴
+                                {% endif %}
+                                {{ problem.difficulty.title() }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="submissions-count">{{ problem.submission_count or 0 }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-puzzle-piece"></i>
+                <h3>No problems available</h3>
+                <p>Check back later for new challenges!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+let currentTypeFilter = 'all';
+let currentDifficultyFilter = 'all';
+
+function filterProblems(filter, type) {
+    if (type === 'type') {
+        currentTypeFilter = filter;
+        // Update type filter tabs
+        document.querySelectorAll('.filter-group:first-child .filter-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.target.classList.add('active');
+    } else if (type === 'difficulty') {
+        currentDifficultyFilter = filter;
+        // Update difficulty filter tabs
+        document.querySelectorAll('.filter-group:last-child .filter-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.target.classList.add('active');
+    }
+    
+    // Apply both filters
+    const rows = document.querySelectorAll('.problem-row');
+    rows.forEach(row => {
+        const rowType = row.dataset.type;
+        const rowDifficulty = row.dataset.difficulty;
+        
+        const typeMatch = currentTypeFilter === 'all' || rowType === currentTypeFilter;
+        const difficultyMatch = currentDifficultyFilter === 'all' || rowDifficulty === currentDifficultyFilter;
+        
+        row.style.display = (typeMatch && difficultyMatch) ? 'table-row' : 'none';
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Codign - System Design Platform{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a855f7;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --light: #f9fafb;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --border: #e2e8f0;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 0.375rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: #ffa116;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .nav-links a:hover {
+            background: #333;
+            color: #ffa116;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: #ffa116;
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background: #ffb84d;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            border: 1px solid #555;
+        }
+        
+        .btn-secondary:hover {
+            background: #333;
+        }
+        
+        .btn-success {
+            background: #00b894;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #00a085;
+        }
+        
+        .btn-warning {
+            background: #fdcb6e;
+            color: #000;
+        }
+        
+        .btn-warning:hover {
+            background: #f39c12;
+        }
+        
+        .btn-info {
+            background: #74b9ff;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #0984e3;
+        }
+        
+        .btn-danger {
+            background: #e17055;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #d63031;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.5s ease;
+        }
+        
+        .alert-success {
+            background: #00b894;
+            color: white;
+        }
+        
+        .alert-error {
+            background: #e17055;
+            color: white;
+        }
+        
+        .alert-warning {
+            background: #fdcb6e;
+            color: #000;
+        }
+        
+        .card {
+            background: #1a1a1a;
+            border-radius: 8px;
+            border: 1px solid #333;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: #555;
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #333;
+            background: #222;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #ffffff;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #555;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #2a2a2a;
+            color: #ffffff;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #ffa116;
+            box-shadow: 0 0 0 2px rgba(255,161,22,0.25);
+        }
+        
+        .mobile-menu {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <i class="fas fa-code"></i>
+                Codign
+            </a>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}">
+                    <i class="fas fa-list"></i>
+                    Problems
+                </a>
+                <a href="{{ url_for('leaderboard') }}">
+                    <i class="fas fa-trophy"></i>
+                    Leaderboard
+                </a>
+                {% if session.username %}
+                    <a href="{{ url_for('profile') }}">
+                        <i class="fas fa-user"></i>
+                        {{ session.username }}
+                    </a>
+                    <a href="{{ url_for('logout') }}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </a>
+                {% endif %}
+            </div>
+            <button class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container" style="padding-top: 1rem;">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'error' if category == 'error' else category }}">
+                            <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' if category == 'success' else 'exclamation-triangle' }}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        alert.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>
